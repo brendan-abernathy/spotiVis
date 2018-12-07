@@ -3,6 +3,7 @@ import spotipy.oauth2 as oauth2
 import gui
 import urllib3
 http = urllib3.PoolManager()
+import os
 
 
 client_id = "7660f65e20dc492fa7a784d5a8118d51"
@@ -19,13 +20,13 @@ window = gui.Display("spotiVis", 100, 100)
 requestWindow = None
 artistField = None
 
-def searchRequest(message):
+def searchRequest(message, arbitraryFunction):
    global requestWindow, artistField
    requestWindow = gui.Display("Choose Artist",300,150)
    requestWindow.add(gui.Label(message), 25, 20)
    artistField = gui.TextField("What Artist?", 8)
    requestWindow.add(artistField, 25, 50)
-   okButton = gui.Button("OK", main)
+   okButton = gui.Button("OK", arbitraryFunction)
    requestWindow.add(okButton, 75, 100)
 
 def main():
@@ -53,10 +54,12 @@ def main():
          out.write(data)
    getRequest.release_conn()
    
-   artistImage = gui.Icon("./cache/artistImageCache.jpg",100)
+   path = os.path.dirname(os.path.realpath(__file__))
+   
+   artistImage = gui.Icon(path + "/cache/artistImageCache.jpg",100)
    window.add(artistImage)
    
-searchRequest("What artist are you interested in?")
+searchRequest("What artist are you interested in?", main)
 #artists related to drake
 #artists = spotify.search(q='artist:' + "Drake", type='artist')
 #drake's album
