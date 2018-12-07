@@ -11,6 +11,12 @@ credentials = oauth2.SpotifyClientCredentials(
 
 token = credentials.get_access_token()
 spotify = spotipy.Spotify(auth=token)
-
-results = spotify.search(q='artist:' + "Queen", type='artist')
-print(results)
+#artists related to drake
+artists = spotify.search(q='artist:' + "Drake", type='artist')
+#drake's album
+albums= spotify.artist_albums("3TVXtAsR1Inumwj472S9r4", album_type=None, country=None,limit=20,offset=0)
+#information about the tracks in scorpion
+tracks=spotify.album_tracks("1ATL5GLyefJaxhQzSPVrLX", limit=50, offset=0)
+#prints drakes top tracks
+topTracks=spotify.artist_top_tracks("3TVXtAsR1Inumwj472S9r4", country='US')
+print(topTracks)
