@@ -34,42 +34,25 @@ def searchRequest(message, arbitraryFunction):
    okButton = gui.Button("OK", arbitraryFunction)
    requestWindow.add(okButton, 215, 60)
 
-def main():
-   global window, requestWindow, artistField
-   requestWindow.close()
-   #Search for the artist on spotify
-   searchName = artistField.getText()
-   artistSearch = spotify.search(q='artist:' + searchName, type='artist')
-   #print(artistSearch)
-   if(len(artistSearch["artists"]["items"]) <= 0):
-      window.close()
-      return -1
-   #Get the most popular artist
-   popularArtist = artistSearch["artists"]["items"][0]
-   #Get their icon
-   artistImageURL = str(popularArtist["images"][0]["url"])
-   
-   #Pulls the image from the internet. Use this format for anything relating to downloading something from the internet.
-   getRequest = http.request('GET', artistImageURL, preload_content=False)
-   with open("./cache/artistImageCache.jpg", 'wb') as out:
+def getImage(url,saveName):
+   getRequest = http.request('GET', url, preload_content=False)
+   with open("./cache/" + saveName, 'wb') as out:
       while True:
          data = getRequest.read(16)
          if not data:
-            break
+            return False
          out.write(data)
    getRequest.release_conn()
-   
-   path = os.path.dirname(os.path.realpath(__file__))
-   
-   artistImage = gui.Icon(path + "/cache/artistImageCache.jpg",150)
-   artistLabel = gui.Label(str(popularArtist["name"]), gui.LEFT, gui.Color(255, 255, 255), gui.Color(30,30,30))
-   artistLabel.setFont(gui.Font("Helvetica", gui.Font.PLAIN, 72))
-   window.add(artistImage, getScreenWidth() - 250, 50)
-   window.add(artistLabel, 50, 50)
-   
-   return 0
+   return True
 
-searchRequest("What artist are you interested in?", main)
+def getMostPopularArtist(search):
+   if(len(search["artists"]["items"]) <= 0):
+      window.close()
+      return -1
+   #Get the most popular artist
+   popularArtist = search["artists"]["items"][0]
+   return popularArtist
+
 #artists related to drake
 #artists = spotify.search(q='artist:' + "Drake", type='artist')
 #drake's album
@@ -79,3 +62,33 @@ searchRequest("What artist are you interested in?", main)
 #prints drakes top tracks
 #topTracks=spotify.artist_top_tracks("3TVXtAsR1Inumwj472S9r4", country='US')
 #print(topTracks)
+
+def main():
+   global window, requestWindow, artistField
+   requestWindow.close()
+   #Search for the artist on spotify
+   searchName = artistField.getText()
+   artistSearch = spotify.search(q='artist:' + searchName, type='artist')
+   artist = getMostPopularArtist(artistSearch)
+   
+   #Get their icon
+   artistImageURL = str(artist["images"][0]["url"])
+   
+   #Pulls the image from the internet. Use this format for anything relating to downloading something from the internet.
+   getImage(artistImageURL, "artistImageCache.jpg")
+   
+   path = os.path.dirname(os.path.realpath(__file__))
+   
+   artistImage = gui.Icon(path + "/cache/artistImageCache.jpg",150)
+   artistLabel = gui.Label(str(artist["name"]), gui.LEFT, gui.Color(255, 255, 255))
+   artistLabel.setFont(gui.Font("Helvetica", gui.Font.PLAIN, 72))
+   genreLabel = gui.Label(str(artist["genres"][0]).title(), gui.LEFT, gui.Color(255, 255, 255))
+   genreLabel.setFont(gui.Font("Helvetica", gui.Font.PLAIN, 36))
+   
+   window.add(artistImage, getScreenWidth() - 250, 50)
+   window.add(artistLabel, 50, 50)
+   window.add(genreLabel, 50, 125)
+   
+   return 0
+
+searchRequest("What artist are you interested in?", main)
