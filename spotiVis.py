@@ -11,6 +11,16 @@ def getScreenWidth():
 def getScreenHeight():
   return gui.Toolkit.getDefaultToolkit().getScreenSize().height
 
+class Album:
+   def __init__(self,json):
+      path = os.path.dirname(os.path.realpath(__file__))
+      self.name = json["name"]
+      getImage(json["images"][1]["url"], "albumArtCache.jpg")
+      self.art = gui.Icon(path + "/cache/albumArtCache.jpg",150)
+      self.totalTracks = json["total_tracks"]
+   def __repr__(self):
+      return str(self.name) + " " + str(self.totalTracks)
+
 client_id = "7660f65e20dc492fa7a784d5a8118d51"
 client_secret = "4577008c88a84b2b83a072533ec7780a"
 
@@ -24,6 +34,7 @@ spotify = spotipy.Spotify(auth=token)
 window = gui.Display("spotiVis", getScreenWidth(), getScreenHeight(),0,0, gui.Color(30,30,30))
 requestWindow = None
 artistField = None
+removables = []
 
 def searchRequest(message, arbitraryFunction):
    global requestWindow, artistField
@@ -89,6 +100,23 @@ def main():
    window.add(artistLabel, 50, 50)
    window.add(genreLabel, 50, 125)
    
+   artistAlbumSearch = spotify.artist_albums(artist["id"], album_type=None, country="US",limit=20,offset=0)
+   artistAlbumSearch = artistAlbumSearch["items"]
+   artistAlbums = []
+   albumCount = None
+   for albumData in artistAlbumSearch:
+         album = Album(albumData)
+         artistAlbums.append(album)
+   if(len(artistAlbums)>=3):
+      albumCount = 3
+   else:
+      albumCount = len(artistAlbums)
+   for i in range(albumCount):
+      window.add(artistAlbums[i].art,50,200+i*200)
+      albumNameLabel = gui.Label(artistAlbums[i].name,gui.LEFT,gui.Color(255,255,255))
+      albumNameLabel.setFont(gui.Font("Helvetica", gui.Font.PLAIN, 36))
+      window.add(albumNameLabel, 225, 200 +i*200)
+      
    return 0
 
 searchRequest("What artist are you interested in?", main)
