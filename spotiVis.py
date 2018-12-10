@@ -112,10 +112,10 @@ def main():
    else:
       albumCount = len(artistAlbums)
    for i in range(albumCount):
-      window.add(artistAlbums[i].art,50,200+i*200)
+      window.add(artistAlbums[i].art,50,225+i*200)
       albumNameLabel = gui.Label(artistAlbums[i].name,gui.LEFT,gui.Color(255,255,255))
-      albumNameLabel.setFont(gui.Font("Helvetica", gui.Font.PLAIN, 36))
-      window.add(albumNameLabel, 225, 200 +i*200)
+      albumNameLabel.setFont(gui.Font("Courier", gui.Font.BOLD, 36))
+      window.add(albumNameLabel, 225, 280 +i*200)
       
    return 0
 
