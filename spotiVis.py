@@ -21,7 +21,7 @@ credentials = oauth2.SpotifyClientCredentials(
 token = credentials.get_access_token()
 spotify = spotipy.Spotify(auth=token)
 
-window = gui.Display("spotiVis", getScreenWidth(), getScreenHeight(),0,0, gui.Color(30,30,30))
+window = gui.Display("spotiVis", getScreenWidth(), getScreenHeight(),0,0, gui.Color(60,60,60))
 requestWindow = None
 artistField = None
 
@@ -79,15 +79,15 @@ def main():
    
    path = os.path.dirname(os.path.realpath(__file__))
    
-   artistImage = gui.Icon(path + "/cache/artistImageCache.jpg",150)
+   artistImage = gui.Icon(path + "/cache/artistImageCache.jpg",300)
    artistLabel = gui.Label(str(artist["name"]), gui.LEFT, gui.Color(255, 255, 255))
-   artistLabel.setFont(gui.Font("Helvetica", gui.Font.PLAIN, 72))
-   genreLabel = gui.Label(str(artist["genres"][0]).title(), gui.LEFT, gui.Color(255, 255, 255))
-   genreLabel.setFont(gui.Font("Helvetica", gui.Font.PLAIN, 36))
+   artistLabel.setFont(gui.Font("Courier", gui.Font.BOLD, 136))
+   genreLabel = gui.Label("Genre: " + str(artist["genres"][0]).title(), gui.LEFT, gui.Color(255, 255, 255))
+   genreLabel.setFont(gui.Font("Courier", gui.Font.BOLD, 36))
    
-   window.add(artistImage, getScreenWidth() - 250, 50)
-   window.add(artistLabel, 50, 50)
-   window.add(genreLabel, 50, 125)
+   window.add(artistImage, getScreenWidth() - 350, 50)
+   window.add(artistLabel, 50, 30)
+   window.add(genreLabel, 50, 170)
    
    return 0
 
