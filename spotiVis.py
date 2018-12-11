@@ -16,7 +16,7 @@ class Album:
       path = os.path.dirname(os.path.realpath(__file__))
       self.name = json["name"]
       getImage(json["images"][1]["url"], "albumArtCache.jpg")
-      self.art = gui.Icon(path + "/cache/albumArtCache.jpg",150)
+      self.art = gui.Icon(path + "/cache/albumArtCache.jpg",60)
       self.totalTracks = json["total_tracks"]
    def __repr__(self):
       return str(self.name) + " " + str(self.totalTracks)
@@ -93,13 +93,17 @@ def main():
    
    artistImage = gui.Icon(path + "/cache/artistImageCache.jpg",300)
    artistLabel = gui.Label(str(artist["name"]), gui.LEFT, gui.Color(255, 255, 255))
-   artistLabel.setFont(gui.Font("Courier", gui.Font.BOLD, 136))
+   artistLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 100))
    genreLabel = gui.Label("Genre: " + str(artist["genres"][0]).title(), gui.LEFT, gui.Color(255, 255, 255))
-   genreLabel.setFont(gui.Font("Courier", gui.Font.BOLD, 36))
+   genreLabel.setFont(gui.Font("Futura", gui.Font.ITALIC, 36))
    
    window.add(artistImage, getScreenWidth() - 350, 50)
-   window.add(artistLabel, 50, 30)
-   window.add(genreLabel, 50, 170)
+   window.add(artistLabel, 50, 20)
+   window.add(genreLabel, 50, 150)
+   
+   albumLabel = gui.Label("Top Albums:", gui.LEFT, gui.Color(255, 255, 255))
+   albumLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 20))
+   window.add(albumLabel, 50, 225)
    
 #track search function - Patrick will comment
    #add label for top tracks
@@ -135,10 +139,10 @@ def main():
    else:
       albumCount = len(artistAlbums)
    for i in range(albumCount):
-      window.add(artistAlbums[i].art,50,225+i*200)
+      window.add(artistAlbums[i].art,50,275+i*75)
       albumNameLabel = gui.Label(artistAlbums[i].name,gui.LEFT,gui.Color(255,255,255))
-      albumNameLabel.setFont(gui.Font("Courier", gui.Font.BOLD, 36))
-      window.add(albumNameLabel, 225, 280 +i*200)
+      albumNameLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 18))
+      window.add(albumNameLabel, 125, 300 +i*75)
       
    return 0
 
