@@ -82,6 +82,7 @@ def main():
    artistSearch = spotify.search(q='artist:' + searchName, type='artist')
    artist = getMostPopularArtist(artistSearch)
    
+   
    #Get their icon
    artistImageURL = str(artist["images"][0]["url"])
    
@@ -100,6 +101,28 @@ def main():
    window.add(artistLabel, 50, 30)
    window.add(genreLabel, 50, 170)
    
+#track search function - Patrick will comment
+   #add label for top tracks
+   topTrackLabel="Top Tracks"
+   topLabel=gui.Label(topTrackLabel,gui.LEFT,gui.Color(255,255,255))
+   topLabel.setFont(gui.Font("Futura",gui.Font.ITALIC,46))
+   window.add(topLabel, getScreenWidth()-800, 350)
+   artistTrackSearch=spotify.artist_top_tracks(artist["id"],country='US')
+   artistTracks=[]
+   trackCount=None
+   for i in artistTrackSearch['tracks']:
+      track= i
+      artistTracks.append(i)
+   if(len(artistTracks)>=5):
+      trackCount=5
+   else:
+      trackCount= len(artistTracks)
+   for i in range(trackCount):
+      trackName=str(i+1) + ". " + artistTracks[i]['name']
+      trackNameLabel = gui.Label(trackName,gui.RIGHT,gui.Color(255,255,255))
+      trackNameLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 36))
+      window.add(trackNameLabel, getScreenWidth()-800, 425 +i*100)
+            
    artistAlbumSearch = spotify.artist_albums(artist["id"], album_type=None, country="US",limit=20,offset=0)
    artistAlbumSearch = artistAlbumSearch["items"]
    artistAlbums = []
