@@ -51,6 +51,10 @@ class Album:
       if(len(Album.albums)<=3):
          window.add(self.art,50,275+(len(Album.albums)-1)*75)
          window.add(self.nameLabel, 125, 300 +(len(Album.albums)-1)*75)
+   def removeSelf(self):
+      window.remove(self.art)
+      window.remove(self.nameLabel)
+      Album.albums.remove(self)
          
    #def update(self):
    
@@ -74,22 +78,6 @@ window = gui.Display("spotiVis", getScreenWidth(), getScreenHeight(),0,0, gui.Co
 requestWindow = None
 artistField = None
 removables = []
-
-#purpose: set up the initial window asking for the user to input the desired artist
-#arguments: message, arbitraryFunction
-#returns: none
-def searchRequest(message, arbitraryFunction):
-   global requestWindow, artistField
-   requestWindow = gui.Display("Choose Artist",300,100,(getScreenWidth()/2)-150, (getScreenHeight()/2)-100)
-   requestWindow.add(gui.Label(message), 25, 15)
-   artistField = gui.TextField("What Artist?", 8)
-   requestWindow.add(artistField, 25, 40)
-   okButton = gui.Button("OK", arbitraryFunction)
-   requestWindow.add(okButton, 215, 60)
-   
-      
-   searchButton = gui.Button("New Artist", searchRequest)
-   window.add(searchButton, 15, 15)
 
 #purpose: take the image of the desired artist to input into the display
 #argumentsL url, saveName
@@ -117,8 +105,12 @@ def getMostPopularArtist(search):
    return popularArtist
 
 def main():
-   global window, requestWindow, artistField
+   global window, requestWindow, artistField, removables
+   cleanup()
    requestWindow.close()
+   searchButton = gui.Button("New Artist", searchRequest)
+   window.add(searchButton, getScreenWidth()-155, 15)
+   removables.append(searchButton)
    #Search for the artist on spotify
    searchName = artistField.getText()
    artistSearch = spotify.search(q='artist:' + searchName, type='artist')
@@ -147,17 +139,22 @@ def main():
    window.add(artistImage, getScreenWidth() - 350, 50)
    window.add(artistLabel, 50, 20)
    window.add(genreLabel, 50, 150)
+   removables.append(artistImage)
+   removables.append(artistLabel)
+   removables.append(genreLabel)
    
    albumLabel = gui.Label("Top Albums:", gui.LEFT, gui.Color(255, 255, 255))
    albumLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 20))
    window.add(albumLabel, 50, 225)
+   removables.append(albumLabel)
    
-#track search function - Patrick will comment
+   #track search function - Patrick will comment
    #add label for top tracks
    topTrackLabel="Top Tracks:"
    topLabel=gui.Label(topTrackLabel,gui.LEFT,gui.Color(255,255,255))
    topLabel.setFont(gui.Font("Futura",gui.Font.BOLD,20))
    window.add(topLabel, getScreenWidth()-1050, 225)
+   removables.append(topLabel)
    artistTrackSearch=spotify.artist_top_tracks(artist["id"],country='US')
    artistTracks=[]
    trackCount=None
@@ -173,14 +170,35 @@ def main():
       trackNameLabel = gui.Label(trackName,gui.RIGHT,gui.Color(255,255,255))
       trackNameLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 20))
       window.add(trackNameLabel, getScreenWidth()-1050, 275 +i*50)
+      removables.append(trackNameLabel)
             
    artistAlbumSearch = spotify.artist_albums(artist["id"], album_type=None, country="US",limit=20,offset=0)
    artistAlbumSearch = artistAlbumSearch["items"]
-   print(artistAlbumSearch)
+   #print(artistAlbumSearch)
    
    for albumData in artistAlbumSearch:
       Album(albumData)
    
    return 0
+
+def cleanup():
+   global removable, window
+   for removable in removables:
+      window.remove(removable)
+   for i in range(len(Album.albums)):
+      Album.albums[0].removeSelf()
+   
+
+#purpose: set up the initial window asking for the user to input the desired artist
+#arguments: message, arbitraryFunction
+#returns: none
+def searchRequest(message="What artist are you interested in?", arbitraryFunction=main):
+   global requestWindow, artistField
+   requestWindow = gui.Display("Choose Artist",300,100,(getScreenWidth()/2)-150, (getScreenHeight()/2)-100)
+   requestWindow.add(gui.Label(message), 25, 15)
+   artistField = gui.TextField("What Artist?", 8)
+   requestWindow.add(artistField, 25, 40)
+   okButton = gui.Button("OK", arbitraryFunction)
+   requestWindow.add(okButton, 215, 60)
 
 searchRequest("What artist are you interested in?", main)
