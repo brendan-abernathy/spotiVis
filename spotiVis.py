@@ -11,15 +11,46 @@ def getScreenWidth():
 def getScreenHeight():
   return gui.Toolkit.getDefaultToolkit().getScreenSize().height
 
+class AlbumTrack:
+   def __init__(self,json):
+      self.name = json["name"]
+      self.number = json["track_number"]
+      self.trackID = json["id"]
+   def __repr__(self):
+      return str(self.name) + " " + str(self.trackID)
+
 class Album:
+   global window
+   albums = []
    def __init__(self,json):
       path = os.path.dirname(os.path.realpath(__file__))
       self.name = json["name"]
+      maxNameLength = 17
+      if(len(self.name)>maxNameLength):
+         self.name = self.name[0:maxNameLength] + "..."
+      self.nameLabel = gui.Label(self.name,gui.LEFT,gui.Color(255,255,255))
+      self.nameLabel.setFont(gui.Font("Futura", gui.Font.PLAIN, 36))
       getImage(json["images"][1]["url"], "albumArtCache.jpg")
       self.art = gui.Icon(path + "/cache/albumArtCache.jpg",150)
       self.totalTracks = json["total_tracks"]
+      self.releaseDate = str(json["release_date"])
+      self.albumID = str(json["id"])
+      self.albumTracksSearch = spotify.album_tracks(self.albumID, limit=50, offset=0)
+      self.tracks = []
+      for trackData in self.albumTracksSearch["items"]:
+         newTrack = AlbumTrack(trackData)
+         self.tracks.append(newTrack)
+      #Todo: grab tracks and add them to here.
+      Album.albums.append(self)
+      if(len(Album.albums)<=3):
+         window.add(self.art, 50, 225 + (len(Album.albums)-1)*200)
+         window.add(self.nameLabel, 225, 225 + (len(Album.albums)-1)*200)
+         
+   #def update(self):
+   
+   
    def __repr__(self):
-      return str(self.name) + " " + str(self.totalTracks)
+      return str(self.name) + " " + str(self.albumID)
 
 client_id = "7660f65e20dc492fa7a784d5a8118d51"
 client_secret = "4577008c88a84b2b83a072533ec7780a"
@@ -64,16 +95,6 @@ def getMostPopularArtist(search):
    popularArtist = search["artists"]["items"][0]
    return popularArtist
 
-#artists related to drake
-#artists = spotify.search(q='artist:' + "Drake", type='artist')
-#drake's album
-#albums= spotify.artist_albums("3TVXtAsR1Inumwj472S9r4", album_type=None, country=None,limit=20,offset=0)
-#information about the tracks in scorpion
-#tracks=spotify.album_tracks("1ATL5GLyefJaxhQzSPVrLX", limit=50, offset=0)
-#prints drakes top tracks
-#topTracks=spotify.artist_top_tracks("3TVXtAsR1Inumwj472S9r4", country='US')
-#print(topTracks)
-
 def main():
    global window, requestWindow, artistField
    requestWindow.close()
@@ -90,33 +111,28 @@ def main():
    
    path = os.path.dirname(os.path.realpath(__file__))
    
-   artistImage = gui.Icon(path + "/cache/artistImageCache.jpg",300)
-   artistLabel = gui.Label(str(artist["name"]), gui.LEFT, gui.Color(255, 255, 255))
-   artistLabel.setFont(gui.Font("Courier", gui.Font.BOLD, 136))
-   genreLabel = gui.Label("Genre: " + str(artist["genres"][0]).title(), gui.LEFT, gui.Color(255, 255, 255))
-   genreLabel.setFont(gui.Font("Courier", gui.Font.BOLD, 36))
+   artistName = str(artist["name"])
+   maxNameLength = 17
+   if(len(artistName)>maxNameLength):
+      artistName = artistName[0:maxNameLength] + "..."
    
-   window.add(artistImage, getScreenWidth() - 350, 50)
+   artistImage = gui.Icon(path + "/cache/artistImageCache.jpg",200)
+   artistLabel = gui.Label(artistName, gui.LEFT, gui.Color(255, 255, 255))
+   artistLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 72))
+   genreLabel = gui.Label("Genre: " + str(artist["genres"][0]).title(), gui.LEFT, gui.Color(255, 255, 255))
+   genreLabel.setFont(gui.Font("Futura", gui.Font.ITALIC, 36))
+   
+   window.add(artistImage, getScreenWidth() - 250, 50)
    window.add(artistLabel, 50, 30)
-   window.add(genreLabel, 50, 170)
+   window.add(genreLabel, 50, 125)
    
    artistAlbumSearch = spotify.artist_albums(artist["id"], album_type=None, country="US",limit=20,offset=0)
    artistAlbumSearch = artistAlbumSearch["items"]
-   artistAlbums = []
-   albumCount = None
+   print(artistAlbumSearch)
+   
    for albumData in artistAlbumSearch:
-         album = Album(albumData)
-         artistAlbums.append(album)
-   if(len(artistAlbums)>=3):
-      albumCount = 3
-   else:
-      albumCount = len(artistAlbums)
-   for i in range(albumCount):
-      window.add(artistAlbums[i].art,50,225+i*200)
-      albumNameLabel = gui.Label(artistAlbums[i].name,gui.LEFT,gui.Color(255,255,255))
-      albumNameLabel.setFont(gui.Font("Courier", gui.Font.BOLD, 36))
-      window.add(albumNameLabel, 225, 280 +i*200)
-      
+      Album(albumData)
+   
    return 0
 
 searchRequest("What artist are you interested in?", main)
