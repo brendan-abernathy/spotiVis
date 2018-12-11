@@ -5,22 +5,36 @@ import urllib3
 http = urllib3.PoolManager()
 import os
 
+#purpose: gets the width of the computer screen the program is being displayed on
+#arguments: none
+#returns: screen width
 def getScreenWidth():
   return gui.Toolkit.getDefaultToolkit().getScreenSize().width
 
+#purpose: gets the height of the computer screen the program is being displayed on
+#arguments: none
+#returns: none
 def getScreenHeight():
   return gui.Toolkit.getDefaultToolkit().getScreenSize().height
 
+
 class Album:
+   #purpose: retrieve the profile picture of the artist selected by the user
+   #arguments: self, json file
+   #returns: none
    def __init__(self,json):
       path = os.path.dirname(os.path.realpath(__file__))
       self.name = json["name"]
       getImage(json["images"][1]["url"], "albumArtCache.jpg")
       self.art = gui.Icon(path + "/cache/albumArtCache.jpg",60)
       self.totalTracks = json["total_tracks"]
+   #purpose: retrieve artist name 
+   #arguments: self
+   #returns: artist name as a string and the total artist tracks as a string
    def __repr__(self):
       return str(self.name) + " " + str(self.totalTracks)
-
+   
+#this is the information that gives us access to Spotify's api.
 client_id = "7660f65e20dc492fa7a784d5a8118d51"
 client_secret = "4577008c88a84b2b83a072533ec7780a"
 
@@ -36,6 +50,9 @@ requestWindow = None
 artistField = None
 removables = []
 
+#purpose: set up the initial window asking for the user to input the desired artist
+#arguments: message, arbitraryFunction
+#returns: none
 def searchRequest(message, arbitraryFunction):
    global requestWindow, artistField
    requestWindow = gui.Display("Choose Artist",300,100,(getScreenWidth()/2)-150, (getScreenHeight()/2)-100)
@@ -44,7 +61,14 @@ def searchRequest(message, arbitraryFunction):
    requestWindow.add(artistField, 25, 40)
    okButton = gui.Button("OK", arbitraryFunction)
    requestWindow.add(okButton, 215, 60)
+   
+      
+   searchButton = gui.Button("New Artist", searchRequest)
+   window.add(searchButton, 15, 15)
 
+#purpose: take the image of the desired artist to input into the display
+#argumentsL url, saveName
+#returns: True or False
 def getImage(url,saveName):
    getRequest = http.request('GET', url, preload_content=False)
    with open("./cache/" + saveName, 'wb') as out:
@@ -56,6 +80,9 @@ def getImage(url,saveName):
    getRequest.release_conn()
    return True
 
+#purpose: returns the most popular artist in the search results based on the artistKey inputted by the user
+#arguments: search
+#returns: most popular artist
 def getMostPopularArtist(search):
    if(len(search["artists"]["items"]) <= 0):
       window.close()
@@ -74,6 +101,9 @@ def getMostPopularArtist(search):
 #topTracks=spotify.artist_top_tracks("3TVXtAsR1Inumwj472S9r4", country='US')
 #print(topTracks)
 
+#sets up the GUI window and displays all the data gathered
+#arguments: none
+#returns: none
 def main():
    global window, requestWindow, artistField
    requestWindow.close()
@@ -107,10 +137,10 @@ def main():
    
 #track search function - Patrick will comment
    #add label for top tracks
-   topTrackLabel="Top Tracks"
+   topTrackLabel="Top Tracks:"
    topLabel=gui.Label(topTrackLabel,gui.LEFT,gui.Color(255,255,255))
-   topLabel.setFont(gui.Font("Futura",gui.Font.ITALIC,46))
-   window.add(topLabel, getScreenWidth()-800, 350)
+   topLabel.setFont(gui.Font("Futura",gui.Font.BOLD,20))
+   window.add(topLabel, getScreenWidth()-1050, 225)
    artistTrackSearch=spotify.artist_top_tracks(artist["id"],country='US')
    artistTracks=[]
    trackCount=None
@@ -124,8 +154,8 @@ def main():
    for i in range(trackCount):
       trackName=str(i+1) + ". " + artistTracks[i]['name']
       trackNameLabel = gui.Label(trackName,gui.RIGHT,gui.Color(255,255,255))
-      trackNameLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 36))
-      window.add(trackNameLabel, getScreenWidth()-800, 425 +i*100)
+      trackNameLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 20))
+      window.add(trackNameLabel, getScreenWidth()-1050, 275 +i*50)
             
    artistAlbumSearch = spotify.artist_albums(artist["id"], album_type=None, country="US",limit=20,offset=0)
    artistAlbumSearch = artistAlbumSearch["items"]
