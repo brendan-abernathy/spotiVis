@@ -46,7 +46,6 @@ class Album:
       for trackData in self.albumTracksSearch["items"]:
          newTrack = AlbumTrack(trackData)
          self.tracks.append(newTrack)
-      #Todo: grab tracks and add them to here.
       Album.albums.append(self)
       if(len(Album.albums)<=3):
          window.add(self.art,50,275+(len(Album.albums)-1)*75)
@@ -126,7 +125,7 @@ def main():
    path = os.path.dirname(os.path.realpath(__file__))
    
    artistName = str(artist["name"])
-   maxNameLength = 17
+   maxNameLength = 16
    if(len(artistName)>maxNameLength):
       artistName = artistName[0:maxNameLength] + "..."
    
@@ -182,7 +181,7 @@ def main():
    return 0
 
 def cleanup():
-   global removable, window
+   global removables, window
    for removable in removables:
       window.remove(removable)
    for i in range(len(Album.albums)):
