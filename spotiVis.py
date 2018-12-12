@@ -148,23 +148,29 @@ def main():
    removables.append(albumLabel)
    
    #track search function - Patrick will comment
-   #add label for top tracks
+   #Label for top tracks
    topTrackLabel="Top Tracks:"
    topLabel=gui.Label(topTrackLabel,gui.LEFT,gui.Color(255,255,255))
    topLabel.setFont(gui.Font("Futura",gui.Font.BOLD,20))
    window.add(topLabel, getScreenWidth()-1050, 225)
    removables.append(topLabel)
+   #Use the spotipy function to get JSON data for the artist's top tracks
    artistTrackSearch=spotify.artist_top_tracks(artist["id"],country='US')
    artistTracks=[]
    trackCount=None
+   #Append all of the artist's top tracks to the list artistTracks
    for i in artistTrackSearch['tracks']:
       track= i
       artistTracks.append(i)
+   #This loop is a safety in case the artist has less than 5 tracks released
+   #Sets the number of tracks displayed to 5 unless there are less than 5, then set it to that number
    if(len(artistTracks)>=5):
       trackCount=5
    else:
       trackCount= len(artistTracks)
+   #Incorporates GUI elemnts
    for i in range(trackCount):
+      #pulls individual track names from the list artistTracks and gives them a number based on popularity
       trackName=str(i+1) + ". " + artistTracks[i]['name']
       trackNameLabel = gui.Label(trackName,gui.RIGHT,gui.Color(255,255,255))
       trackNameLabel.setFont(gui.Font("Futura", gui.Font.BOLD, 20))
