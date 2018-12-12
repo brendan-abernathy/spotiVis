@@ -114,7 +114,7 @@ class Album:
       else:
          #Download a random song and use jLayer to convert it to wav
          getSong(random.choice(self.tracks).songURL, "previewCache.mp3")
-         convert.convert(path + "/cache/previewCache.mp3", path + "/cache/previewCache.wav")
+         jlConvert.convert(path + "/cache/previewCache.mp3", path + "/cache/previewCache.wav")
          #Load and play the song using jythonMusic
          self.aSample=AudioSample(path + "/cache/previewCache.wav")
          self.aSample.play()
