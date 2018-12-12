@@ -4,13 +4,14 @@ import gui
 import urllib3
 http = urllib3.PoolManager()
 import os
-
+from javazoom.jl.converter import Converter
+convert = Converter()
+from music import *
 #purpose: gets the width of the computer screen the program is being displayed on
 #arguments: none
 #returns: screen width
 def getScreenWidth():
   return gui.Toolkit.getDefaultToolkit().getScreenSize().width
-
 #purpose: gets the height of the computer screen the program is being displayed on
 #arguments: none
 #returns: none
@@ -19,9 +20,11 @@ def getScreenHeight():
 
 class AlbumTrack:
    def __init__(self,json):
+      self.data = json
       self.name = json["name"]
       self.number = json["track_number"]
       self.trackID = json["id"]
+      self.songURL = json["preview_url"]
    def __repr__(self):
       return str(self.name) + " " + str(self.trackID)
 
@@ -30,6 +33,7 @@ class Album:
    albums = []
    def __init__(self,json):
       path = os.path.dirname(os.path.realpath(__file__))
+      self.data = json
       self.name = json["name"]
       maxNameLength = 17
       if(len(self.name)>maxNameLength):
@@ -46,6 +50,8 @@ class Album:
       for trackData in self.albumTracksSearch["items"]:
          newTrack = AlbumTrack(trackData)
          self.tracks.append(newTrack)
+      self.aSample = None
+      self.art.onMouseDown(self.previewSong)
       Album.albums.append(self)
       if(len(Album.albums)<=3):
          window.add(self.art,50,275+(len(Album.albums)-1)*75)
@@ -54,7 +60,19 @@ class Album:
       window.remove(self.art)
       window.remove(self.nameLabel)
       Album.albums.remove(self)
-         
+   def previewSong(self,x,y):
+      path = os.path.dirname(os.path.realpath(__file__))
+      getSong(self.tracks[0].songURL, "previewCache.mp3")
+      if(self.aSample != None):
+         if(self.aSample.isPlaying()):
+            self.aSample.stop()
+         else:
+            self.aSample.play()
+      else:
+         convert.convert(path + "/cache/previewCache.mp3", path + "/cache/previewCache.wav")
+         self.aSample=AudioSample(path + "/cache/previewCache.wav")
+         self.aSample.play()
+      
    #def update(self):
    
    #purpose: retrieve artist name 
@@ -82,6 +100,17 @@ removables = []
 #argumentsL url, saveName
 #returns: True or False
 def getImage(url,saveName):
+   getRequest = http.request('GET', url, preload_content=False)
+   with open("./cache/" + saveName, 'wb') as out:
+      while True:
+         data = getRequest.read(16)
+         if not data:
+            return False
+         out.write(data)
+   getRequest.release_conn()
+   return True
+
+def getSong(url,saveName):
    getRequest = http.request('GET', url, preload_content=False)
    with open("./cache/" + saveName, 'wb') as out:
       while True:
