@@ -160,9 +160,7 @@ def main():
    removables.append(spotifyLogo)
    
    #track search function - Patrick will comment
-<<<<<<< HEAD
-   #Label for top tracks
-=======
+
    #add label for top tracks
    relatedArtistLabel = "Related Artists:"
    relatedLabel = gui.Label(relatedArtistLabel, gui.LEFT, gui.Color(255, 255, 255))
@@ -192,8 +190,6 @@ def main():
       window.add(relatedArtistNameLabel, getScreenWidth() - 225 - i*125, 600)
       removables.append(relatedArtistNameLabel)
    
-
->>>>>>> 712f4f951725ee3e40ab0057dd2f465e5fc1b4f8
    topTrackLabel="Top Tracks:"
    topLabel=gui.Label(topTrackLabel,gui.LEFT,gui.Color(255,255,255))
    topLabel.setFont(gui.Font("Futura",gui.Font.BOLD,20))
