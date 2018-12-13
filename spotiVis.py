@@ -11,15 +11,15 @@ from javazoom.jl.converter import Converter
 jlConverter = Converter()
 from music import *
 
-#purpose: gets the width of the computer screen the program is being displayed on
-#arguments: none
-#returns: screen width
+#getScreenWidth: gets the width of the computer screen the program is being displayed on
+#Arguments: None
+#Returns: type Int, screen width.
 def getScreenWidth():
   return gui.Toolkit.getDefaultToolkit().getScreenSize().width
 
-#purpose: gets the height of the computer screen the program is being displayed on
-#arguments: none
-#returns: none
+#getScreenHeight: gets the height of the computer screen the program is being displayed on
+#Arguments: None
+#Returns: type Int, screen width.
 def getScreenHeight():
   return gui.Toolkit.getDefaultToolkit().getScreenSize().height
 
